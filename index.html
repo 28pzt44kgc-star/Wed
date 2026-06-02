@@ -1,0 +1,1378 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>海岛晚风，吹了七年 —— 张家麒 ♥ 姜泡 云端婚礼仪式</title>
+    <style>
+        /* --- 核心视觉系统与设计Token --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        :root {
+            --primary-gold: #e2c08d;
+            --light-gold: #f5e4bc;
+            --deep-gold: #c59b4f;
+            --text-dark: #1e1b15;
+            --text-light: #fefcf9;
+            --font-serif: "Georgia", "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", serif;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
+            --transition-epic: 1.2s cubic-bezier(0.25, 1, 0.2, 1);
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: var(--font-sans);
+            background-color: #030509;
+            color: var(--text-light);
+            cursor: crosshair;
+        }
+
+        /* --- 电影宽幅黑边框架 (Cinematic Letterbox) --- */
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            left: 0;
+            width: 100%;
+            height: 4vh;
+            background: #000;
+            z-index: 999;
+            pointer-events: none;
+            transition: height 0.5s;
+        }
+        body::before { top: 0; }
+        body::after { bottom: 0; }
+
+        @media (max-width: 768px) {
+            body::before, body::after { height: 2vh; }
+        }
+
+        /* --- 动态呼吸夜空与潮汐背景 --- */
+        .stage-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #sky-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            transition: background var(--transition-epic);
+            background: linear-gradient(180deg, #050811 0%, #0a1128 50%, #151f3c 100%);
+        }
+
+        /* --- 音乐控制器 (月光贝母) --- */
+        .music-controller {
+            position: fixed;
+            top: 6vh;
+            right: 4vw;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(226, 192, 141, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.5s var(--transition-epic);
+        }
+
+        .music-controller:hover {
+            transform: scale(1.1) rotate(15deg);
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 15px rgba(226, 192, 141, 0.3);
+        }
+
+        .music-controller svg {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: var(--light-gold);
+            stroke-width: 1.5;
+            transition: all 0.5s;
+        }
+
+        .music-controller.playing svg {
+            stroke: #fff;
+            animation: shellWobble 2.5s infinite ease-in-out;
+        }
+
+        .music-pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 1px solid var(--primary-gold);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .music-controller.playing .music-pulse {
+            animation: pulseRing 2s infinite cubic-bezier(0.25, 0, 0, 1);
+        }
+
+        /* --- 极致浪漫的邀请函大门 (Portal) --- */
+        #ceremony-portal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 998;
+            background: #05070b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1.5s cubic-bezier(0.25, 1, 0.2, 1), transform 1.5s cubic-bezier(0.25, 1, 0.2, 1);
+        }
+
+        #ceremony-portal.dismissed {
+            opacity: 0;
+            transform: scale(1.05);
+            pointer-events: none;
+        }
+
+        .envelope-card {
+            width: 88%;
+            max-width: 480px;
+            padding: 50px 30px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(6, 10, 23, 0.95) 100%);
+            border: 1px solid rgba(226, 192, 141, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUpFadeIn 1.8s 0.3s forwards cubic-bezier(0.25, 1, 0.2, 1);
+        }
+
+        .portal-header {
+            font-family: var(--font-serif);
+            font-size: clamp(1.8rem, 5vw, 2.6rem);
+            font-weight: 300;
+            letter-spacing: 8px;
+            color: var(--primary-gold);
+            margin-bottom: 25px;
+            text-shadow: 0 0 20px rgba(226, 192, 141, 0.15);
+        }
+
+        .portal-subtitle {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            letter-spacing: 10px;
+            color: #fff;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .portal-tag {
+            font-size: 0.8rem;
+            letter-spacing: 5px;
+            color: #7c8ba1;
+            margin-bottom: 35px;
+            text-transform: uppercase;
+        }
+
+        .portal-divider {
+            width: 80px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary-gold), transparent);
+            margin: 0 auto 35px auto;
+        }
+
+        .portal-poem {
+            font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+            line-height: 2.2;
+            letter-spacing: 4px;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 45px;
+            font-weight: 300;
+        }
+
+        .btn-enter {
+            padding: 15px 45px;
+            background: transparent;
+            border: 1px solid var(--primary-gold);
+            color: var(--primary-gold);
+            font-size: 0.9rem;
+            letter-spacing: 6px;
+            text-indent: 6px;
+            border-radius: 30px;
+            cursor: pointer;
+            position: relative;
+            z-index: 10;
+            transition: all 0.6s var(--transition-epic);
+        }
+
+        .btn-enter:hover {
+            background: var(--primary-gold);
+            color: #030509;
+            box-shadow: 0 0 25px rgba(226, 192, 141, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* --- 电影章节视口系统 --- */
+        #cinema-canvas {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+
+        .scene-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s ease-in-out, transform 1.5s cubic-bezier(0.25, 1, 0.2, 1);
+            transform: scale(0.95);
+        }
+
+        .scene-container.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+
+        /* --- 12幕深度定制化独立视觉结构 --- */
+
+        /* Scene 1: 相遇之光 (极简两星聚拢) */
+        .scene1-stars-meet {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .star-orb {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.8));
+            top: 45%;
+            transition: transform 3.5s cubic-bezier(0.1, 0.8, 0.2, 1);
+        }
+
+        .star-left { left: 10%; transform: translateX(0); }
+        .star-right { right: 10%; transform: translateX(0); }
+
+        .scene-container.active .star-left {
+            transform: translateX(calc(40vw - 10px));
+        }
+        .scene-container.active .star-right {
+            transform: translateX(calc(-40vw + 10px));
+        }
+
+        /* Scene 3: 山海奔赴 (双城视差蒙太奇) */
+        .montage-split {
+            display: flex;
+            width: 80%;
+            max-width: 900px;
+            height: 50vh;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .montage-city {
+            flex: 1;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .city-skyline {
+            width: 80%;
+            height: 40px;
+            border-bottom: 2px dashed rgba(226, 192, 141, 0.4);
+            margin-bottom: 20px;
+        }
+
+        .bridge-line {
+            position: absolute;
+            width: 0%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-gold), transparent);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 3s 1s ease-in-out;
+        }
+
+        .scene-container.active .bridge-line {
+            width: 120%;
+        }
+
+        /* Scene 5: 拍立得相册风铃 (Polaroid Windbell) */
+        .windbell-gallery {
+            display: flex;
+            gap: 30px;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+
+        .polaroid-frame {
+            width: 180px;
+            padding: 12px 12px 30px 12px;
+            background: #fff;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            border-radius: 4px;
+            color: var(--text-dark);
+            transform: rotateZ(var(--r)) rotateY(var(--ry)) translateY(30px);
+            transition: all 0.8s cubic-bezier(0.25, 1, 0.2, 1);
+            cursor: pointer;
+            opacity: 0;
+        }
+
+        .scene-container.active .polaroid-frame {
+            opacity: 1;
+            transform: rotateZ(var(--r)) rotateY(var(--ry)) translateY(0);
+        }
+
+        .polaroid-frame:hover {
+            transform: scale(1.15) rotateZ(0deg) rotateY(0deg) translateY(-15px) !important;
+            z-index: 10;
+        }
+
+        .polaroid-img {
+            width: 100%;
+            height: 150px;
+            background-color: #f5eedf;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .polaroid-text {
+            font-family: var(--font-serif);
+            font-size: 0.85rem;
+            text-align: center;
+            font-weight: 600;
+            color: #5d513c;
+        }
+
+        /* Scene 6: 3D时间长廊轴 (Time Corridor) */
+        .time-corridor {
+            position: relative;
+            width: 85%;
+            max-width: 800px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .time-line-axis {
+            position: absolute;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, var(--primary-gold) 50%, transparent 100%);
+            top: 50%;
+            transition: width 3s ease-in-out;
+        }
+
+        .scene-container.active .time-line-axis {
+            width: 100%;
+        }
+
+        .time-node {
+            position: relative;
+            text-align: center;
+            transform: translateY(50px);
+            opacity: 0;
+            transition: all 1s var(--transition-epic);
+        }
+
+        .scene-container.active .time-node:nth-child(2) { transition-delay: 0.4s; opacity: 1; transform: translateY(0); }
+        .scene-container.active .time-node:nth-child(3) { transition-delay: 0.8s; opacity: 1; transform: translateY(0); }
+        .scene-container.active .time-node:nth-child(4) { transition-delay: 1.2s; opacity: 1; transform: translateY(0); }
+
+        .node-year {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            color: var(--primary-gold);
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .node-circle {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid var(--primary-gold);
+            margin: 0 auto 15px auto;
+            box-shadow: 0 0 10px var(--primary-gold);
+        }
+
+        /* Scene 8: 婚礼誓言 (神圣拱门) */
+        .cathedral-arch {
+            position: absolute;
+            width: 260px;
+            height: 420px;
+            border: 1.5px solid rgba(226, 192, 141, 0.25);
+            border-bottom: none;
+            border-radius: 130px 130px 0 0;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: scale(0.9) translateY(40px);
+            transition: all 2s var(--transition-epic);
+        }
+
+        .cathedral-arch::before {
+            content: '';
+            position: absolute;
+            top: 4px; left: 4px; right: 4px; bottom: 0;
+            border: 0.5px solid rgba(226, 192, 141, 0.15);
+            border-bottom: none;
+            border-radius: 126px 126px 0 0;
+        }
+
+        .scene-container.active .cathedral-arch {
+            transform: scale(1) translateY(0);
+            border-color: rgba(226, 192, 141, 0.6);
+        }
+
+        /* Scene 10: 钻戒交汇星云 (Climax Rings) */
+        .cosmic-ring-wrap {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Scene 11: 指纹重合结扣 */
+        .fingerprint-overlay {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .print-svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            stroke: var(--primary-gold);
+            stroke-width: 1.5;
+            fill: none;
+            opacity: 0.4;
+            transition: transform 3.5s cubic-bezier(0.1, 0.8, 0.2, 1), opacity 3s;
+        }
+
+        .print-left { transform: translateX(-40px) rotate(-15deg); }
+        .print-right { transform: translateX(40px) rotate(15deg); }
+
+        .scene-container.active .print-left {
+            transform: translateX(0) rotate(0);
+            opacity: 0.8;
+        }
+        .scene-container.active .print-right {
+            transform: translateX(0) rotate(0);
+            opacity: 0.8;
+        }
+
+        /* --- 电影文字排版公共卡片 --- */
+        .cinematic-card {
+            z-index: 100;
+            text-align: center;
+            padding: 30px;
+            max-width: 600px;
+        }
+
+        .cinematic-card.left-aligned {
+            text-align: left;
+        }
+
+        .scene-title {
+            font-family: var(--font-serif);
+            font-size: clamp(1.4rem, 4.5vw, 2.2rem);
+            font-weight: 300;
+            letter-spacing: 8px;
+            margin-bottom: clamp(25px, 5vh, 40px);
+            color: #fff;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s 0.3s cubic-bezier(0.25, 1, 0.2, 1);
+        }
+
+        .scene-container.active .scene-title {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scene-desc {
+            font-family: var(--font-serif);
+            font-size: clamp(0.95rem, 2.8vw, 1.15rem);
+            line-height: 2.3;
+            letter-spacing: 5px;
+            color: rgba(255, 255, 255, 0.88);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1.2s 0.6s cubic-bezier(0.25, 1, 0.2, 1);
+        }
+
+        .scene-container.active .scene-desc {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- 胶片感章节指示器 (右侧) --- */
+        .film-strip-nav {
+            position: fixed;
+            right: 3vw;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 1.5s var(--transition-epic);
+        }
+
+        .film-strip-nav.visible {
+            opacity: 1;
+        }
+
+        .film-frame {
+            width: 14px;
+            height: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: transparent;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.4s;
+        }
+
+        .film-frame::before, .film-frame::after {
+            content: '';
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .film-frame::before { top: 3px; }
+        .film-frame::after { bottom: 3px; }
+
+        .film-frame.active {
+            border-color: var(--primary-gold);
+            background: var(--primary-gold);
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(226, 192, 141, 0.5);
+        }
+
+        .film-frame.active::before, .film-frame.active::after {
+            background: #000;
+        }
+
+        /* --- 电影宽画幅底部微标 --- */
+        .cinematic-footer-hint {
+            position: fixed;
+            bottom: 5vh;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1s var(--transition-epic);
+        }
+
+        .cinematic-footer-hint.visible {
+            opacity: 0.6;
+        }
+
+        .scroller-text {
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .scroller-line {
+            width: 1px;
+            height: 30px;
+            background: linear-gradient(to bottom, var(--primary-gold), transparent);
+            animation: pulseHeight 2s infinite ease-in-out;
+        }
+
+        /* --- 潮汐横扫式转场幕 (Tide Sweep Curtain) --- */
+        #tide-sweep-curtain {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(3,5,9,0) 0%, rgba(226,192,141,0.2) 40%, rgba(3,5,9,0.95) 70%, #030509 100%);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 990;
+            pointer-events: none;
+        }
+
+        #tide-sweep-curtain.sweep {
+            animation: sweepOcean 1.4s cubic-bezier(0.3, 0.8, 0.1, 1) forwards;
+        }
+
+        /* --- Keyframe Keyframes --- */
+        @keyframes slideUpFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shellWobble {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.05) rotate(5deg); }
+        }
+
+        @keyframes pulseRing {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+
+        @keyframes sweepOcean {
+            0% { left: -100%; }
+            50% { left: 10%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes pulseHeight {
+            0%, 100% { transform: scaleY(0.7); opacity: 0.4; }
+            50% { transform: scaleY(1.3); opacity: 1; }
+        }
+
+        /* 移动设备微调 */
+        @media (max-width: 768px) {
+            .windbell-gallery {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .polaroid-frame {
+                width: 130px;
+                padding: 8px 8px 18px 8px;
+            }
+            .polaroid-img { height: 100px; }
+            .montage-split {
+                flex-direction: column;
+                height: 60vh;
+            }
+            .time-corridor {
+                flex-direction: column;
+                height: 70%;
+                justify-content: space-around;
+            }
+            .time-line-axis {
+                left: 50%;
+                width: 1px !important;
+                height: 0;
+                top: 0;
+            }
+            .scene-container.active .time-line-axis {
+                height: 100%;
+            }
+            .film-strip-nav {
+                right: 2vw;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 动态渲染夜空与微光粒子画布 -->
+    <div id="sky-gradient"></div>
+    <canvas id="ambient-canvas" class="stage-canvas"></canvas>
+
+    <!-- 音乐物理控制器 (月光贝母) -->
+    <div class="music-controller" id="music-btn" title="音乐控制">
+        <div class="music-pulse"></div>
+        <svg viewBox="0 0 32 32">
+            <path d="M16 4C11 4 6 7.5 4.5 13C3.5 16.5 4.5 20.5 7.5 23.5L16 29L24.5 23.5C27.5 20.5 28.5 16.5 27.5 13C26 7.5 21 4 16 4Z" />
+            <path d="M16 29C16 29 11 25 10 20C9.5 17.5 11 15 13.5 14.5C15 14.2 16 15 16 15C16 15 17 14.2 18.5 14.5C21 15 22.5 17.5 22 20C21 25 16 29 16 29Z" />
+            <circle cx="16" cy="19" r="2" fill="#fff" />
+        </svg>
+    </div>
+
+    <!-- 电影转场大潮汐幕 -->
+    <div id="tide-sweep-curtain"></div>
+
+    <!-- 极高兼容性背景音乐（多源容错） -->
+    <audio id="wedding-music" loop preload="auto">
+        <source src="music.mp3" type="audio/mpeg">
+        <source src="https://assets.codepen.io/4358584/An+Hour+Of+Beautiful+Wedding+Music.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- 邀请函首页 (第二层世界观) -->
+    <section id="ceremony-portal">
+        <div class="envelope-card">
+            <h1 class="portal-header">张家麒 ♥ 姜泡</h1>
+            <p class="portal-subtitle">海岛晚风，吹了七年</p>
+            <p class="portal-tag">云端婚礼仪式</p>
+            <div class="portal-divider"></div>
+            <div class="portal-poem">
+                “感谢你跨越山海而来，<br>
+                见证我们的余生开始。”
+            </div>
+            <button class="btn-enter" id="btn-portal-enter">步入仪式</button>
+        </div>
+    </section>
+
+    <!-- 电影主幕切换区 -->
+    <main id="cinema-canvas">
+
+        <!-- 第一幕：命运让我们相遇 -->
+        <section class="scene-container" data-scene="1">
+            <div class="scene1-stars-meet">
+                <div class="star-orb star-left"></div>
+                <div class="star-orb star-right"></div>
+            </div>
+            <div class="cinematic-card">
+                <h2 class="scene-title">第一幕：命运让我们相遇</h2>
+                <p class="scene-desc">命运是一场悄无声息的奇迹，<br>我们在人海深处，不期而遇。</p>
+            </div>
+        </section>
+
+        <!-- 第二幕：心动开始生长 -->
+        <section class="scene-container" data-scene="2">
+            <div class="cinematic-card">
+                <h2 class="scene-title">第二幕：心动开始生长</h2>
+                <p class="scene-desc">像一粒落在温柔海滩的种子，<br>关于你的心动，开始野蛮生长。</p>
+            </div>
+        </section>
+
+        <!-- 第三幕：跨越山海奔赴 -->
+        <section class="scene-container" data-scene="3">
+            <div class="montage-split">
+                <div class="montage-city">
+                    <div style="font-size:0.8rem; letter-spacing:3px; color:var(--primary-gold); margin-bottom:15px;">KUNMING</div>
+                    <div class="city-skyline"></div>
+                    <div style="color:rgba(255,255,255,0.7); font-size:0.9rem;">张家麒 的故乡</div>
+                </div>
+                <div class="bridge-line"></div>
+                <div class="montage-city">
+                    <div style="font-size:0.8rem; letter-spacing:3px; color:var(--primary-gold); margin-bottom:15px;">CHONGQING</div>
+                    <div class="city-skyline"></div>
+                    <div style="color:rgba(255,255,255,0.7); font-size:0.9rem;">姜泡 的来处</div>
+                </div>
+            </div>
+            <div class="cinematic-card" style="position:absolute; bottom:12vh;">
+                <h2 class="scene-title">第三幕：跨越山海奔赴</h2>
+                <p class="scene-desc">跨越无数座城市的距离，每一次奔赴，都为了能拥抱你。</p>
+            </div>
+        </section>
+
+        <!-- 第四幕：从异地到并肩 -->
+        <section class="scene-container" data-scene="4">
+            <div class="cinematic-card">
+                <h2 class="scene-title">第四幕：从异地到并肩</h2>
+                <p class="scene-desc">从两座城市的牵挂，到同一屋檐下的灯火，<br>我们终于，并肩看海。</p>
+            </div>
+        </section>
+
+        <!-- 第五幕：学会如何去爱 -->
+        <section class="scene-container" data-scene="5">
+            <div class="windbell-gallery">
+                <div class="polaroid-frame" style="--r: -8deg; --ry: 15deg;">
+                    <div class="polaroid-img">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#e2c08d"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="rgba(226,192,141,0.2)"/></svg>
+                    </div>
+                    <p class="polaroid-text">初见</p>
+                </div>
+                <div class="polaroid-frame" style="--r: 5deg; --ry: -10deg;">
+                    <div class="polaroid-img">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#e2c08d"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke-width="2" stroke-linecap="round"/></svg>
+                    </div>
+                    <p class="polaroid-text">晨昏</p>
+                </div>
+                <div class="polaroid-frame" style="--r: -3deg; --ry: 5deg;">
+                    <div class="polaroid-img">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#e2c08d"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m11.314 11.314l.707.707" stroke-width="2" stroke-linecap="round"/></svg>
+                    </div>
+                    <p class="polaroid-text">并肩</p>
+                </div>
+            </div>
+            <div class="cinematic-card" style="position:absolute; bottom:10vh;">
+                <h2 class="scene-title">第五幕：学会如何去爱</h2>
+                <p class="scene-desc">在琐碎的柴米油盐里，我们慢慢拼凑出，爱最完整的模样。</p>
+            </div>
+        </section>
+
+        <!-- 第六幕：七年的时光长河 -->
+        <section class="scene-container" data-scene="6">
+            <div class="time-corridor">
+                <div class="time-line-axis"></div>
+                <div class="time-node">
+                    <p class="node-year">2019</p>
+                    <div class="node-circle"></div>
+                    <p style="font-size:0.85rem; color:rgba(255,255,255,0.7)">初次牵手</p>
+                </div>
+                <div class="time-node">
+                    <p class="node-year">2023</p>
+                    <div class="node-circle"></div>
+                    <p style="font-size:0.85rem; color:rgba(255,255,255,0.7)">同城相守</p>
+                </div>
+                <div class="time-node">
+                    <p class="node-year">2026</p>
+                    <div class="node-circle"></div>
+                    <p style="font-size:0.85rem; color:rgba(255,255,255,0.7)">余生相伴</p>
+                </div>
+            </div>
+            <div class="cinematic-card" style="position:absolute; bottom:10vh;">
+                <h2 class="scene-title">第六幕：七年的时光长河</h2>
+                <p class="scene-desc">两千五百五十五个日夜，时间的河流，温柔洗刷着坚守。</p>
+            </div>
+        </section>
+
+        <!-- 第七幕：关于未来的承诺 -->
+        <section class="scene-container" data-scene="7">
+            <div class="cinematic-card">
+                <h2 class="scene-title">第七幕：关于未来的承诺</h2>
+                <p class="scene-desc" style="line-height:2.6;">
+                    这是关于一生的承诺，<br>
+                    此后的岁月，我与你共赴。<br>
+                    每一个潮起潮落，都有你在身旁。
+                </p>
+            </div>
+        </section>
+
+        <!-- 第八幕：婚礼誓言 -->
+        <section class="scene-container" data-scene="8">
+            <div class="cathedral-arch"></div>
+            <div class="cinematic-card">
+                <h2 class="scene-title" style="margin-top:-30px;">第八幕：婚礼誓言</h2>
+                <p class="scene-desc" style="font-style:italic;">
+                    在群星与潮汐的注视下，<br>
+                    说出那句准备了一生的誓词：<br>
+                    “无论风雨晴澜，我将永远守护在你身旁。”
+                </p>
+            </div>
+        </section>
+
+        <!-- 第九幕：求婚时刻（情绪高潮 钻戒凝结） -->
+        <section class="scene-container" data-scene="9">
+            <div class="cinematic-card">
+                <h2 class="scene-title" style="color: var(--primary-gold); text-shadow: 0 0 15px rgba(226,192,141,0.4)">第九幕：求婚时刻</h2>
+                <p class="scene-desc" style="font-size: 1.35rem; line-height: 2.6; font-weight: 400; letter-spacing:6px;">
+                    姜泡<br><br>
+                    海岛晚风，吹了七年<br>
+                    往后余生，我想和你一起吹<br><br>
+                    <span style="color:#fff; border-bottom: 1px solid var(--primary-gold); padding-bottom:5px;">你愿意嫁给我吗？</span>
+                </p>
+                <p style="margin-top: 40px; font-size: 0.8rem; color: var(--primary-gold); opacity: 0.8; letter-spacing: 4px;">
+                    —— 请轻触屏幕，见证她的回应 ——
+                </p>
+            </div>
+        </section>
+
+        <!-- 第十幕：新娘回应（圣洁纯白破晓） -->
+        <section class="scene-container" data-scene="10" id="scene-she-says-yes">
+            <div class="cosmic-ring-wrap">
+                <div class="fingerprint-overlay">
+                    <svg class="print-svg print-left" viewBox="0 0 100 100">
+                        <ellipse cx="50" cy="50" rx="35" ry="22" />
+                        <ellipse cx="50" cy="50" rx="25" ry="15" />
+                        <ellipse cx="50" cy="50" rx="15" ry="8" />
+                    </svg>
+                    <svg class="print-svg print-right" viewBox="0 0 100 100">
+                        <ellipse cx="50" cy="50" rx="35" ry="22" />
+                        <ellipse cx="50" cy="50" rx="25" ry="15" />
+                        <ellipse cx="50" cy="50" rx="15" ry="8" />
+                    </svg>
+                </div>
+            </div>
+            <div class="cinematic-card" style="position: absolute; bottom: 12vh;">
+                <p style="font-family: var(--font-serif); font-size: 1.2rem; color: var(--primary-gold); letter-spacing: 6px; margin-bottom:15px;">她说：</p>
+                <h2 class="scene-title" style="font-size: clamp(2rem, 6vw, 3.2rem); letter-spacing: 12px; margin-bottom: 0; color: #fff;">“我愿意。”</h2>
+            </div>
+        </section>
+
+        <!-- 第十一幕：正式结为夫妻 -->
+        <section class="scene-container" data-scene="11">
+            <div class="cinematic-card" style="background: rgba(0, 0, 0, 0.4); padding: 40px; border-radius: 20px; border: 1px solid rgba(226, 192, 141, 0.15);">
+                <p class="scene-desc" style="font-size: clamp(1.15rem, 3.5vw, 1.5rem); line-height: 2.6; color: #fff; letter-spacing:6px;">
+                    “从此以后，<br>
+                    <span style="color: var(--primary-gold); font-weight: 500;">张家麒</span> 与 <span style="color: var(--primary-gold); font-weight: 500;">姜泡</span>，<br>
+                    正式结为夫妻。”
+                </p>
+                <div style="margin-top: 30px; font-size: 0.75rem; color: rgba(255,255,255,0.4); letter-spacing: 5px;">天地见证 · 岁岁年年</div>
+            </div>
+        </section>
+
+        <!-- 第十二幕：婚宴祝酒 -->
+        <section class="scene-container" data-scene="12">
+            <div class="cinematic-card" style="max-width: 650px;">
+                <p style="font-family: var(--font-serif); font-size: 1.5rem; color: var(--primary-gold); letter-spacing: 8px; margin-bottom: 25px;">“谢谢你来”</p>
+                <p class="scene-desc" style="font-size: 1.05rem; line-height: 2.4; margin-bottom: 35px; color: rgba(255,255,255,0.9);">
+                    愿爱意永远有归处<br>
+                    愿所有等待都能重逢<br>
+                    愿每个相信爱情的人，都能被温柔以待
+                </p>
+                <div style="border-top: 1px solid rgba(255,255,255,0.15); padding-top: 30px;">
+                    <h3 style="font-family: var(--font-serif); font-size: 2rem; letter-spacing: 6px; font-weight: 300; color: var(--primary-gold);">张家麒 ♥ 姜泡</h3>
+                    <p style="font-size: 0.8rem; letter-spacing: 4px; color: rgba(255,255,255,0.5); margin-top: 10px;">2026 · 海岛晚风，吹了七年</p>
+                    <p style="font-size: 1.2rem; letter-spacing: 8px; color: #fff; margin-top: 20px; font-weight: 300;">我们结婚啦</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 右侧胶片卡槽式指示器 -->
+    <div class="film-strip-nav" id="film-nav"></div>
+
+    <!-- 底部电影滑动指示器 -->
+    <div class="cinematic-footer-hint" id="scroller">
+        <span class="scroller-text">滑动步入下一幕</span>
+        <div class="scroller-line"></div>
+    </div>
+
+    <script>
+        /* --- 极致视听及高级粒子渲染架构 --- */
+        let activeIndex = 0;
+        let isSweeping = false;
+        let particles = [];
+        let rippleWaves = [];
+        const totalScenes = 12;
+
+        const body = document.body;
+        const mainCanvas = document.getElementById('ambient-canvas');
+        const ctx = mainCanvas.getContext('2d');
+        const audio = document.getElementById('wedding-music');
+        const musicBtn = document.getElementById('music-btn');
+        const scroller = document.getElementById('scroller');
+        const filmNav = document.getElementById('film-nav');
+        const portal = document.getElementById('ceremony-portal');
+        const skyBg = document.getElementById('sky-gradient');
+
+        // 不同场景定制天空过渡配置
+        const sceneAtmospheres = {
+            1: "linear-gradient(180deg, #020305 0%, #080c18 50%, #111a30 100%)", // 幽暗寂静
+            2: "linear-gradient(180deg, #050b1a 0%, #121e3d 60%, #201735 100%)", // 心动浅紫
+            3: "linear-gradient(180deg, #090e21 0%, #1f1b3d 50%, #3a1e36 100%)", // 山海霞光
+            4: "linear-gradient(180deg, #0d122c 0%, #2c1a40 60%, #442a42 100%)", // 暮霭并肩
+            5: "linear-gradient(180deg, #101633 0%, #301f46 60%, #5a3c4a 100%)", // 温馨粉橙
+            6: "linear-gradient(180deg, #030611 0%, #0a1024 60%, #152244 100%)", // 璀璨时光
+            7: "linear-gradient(180deg, #02050f 0%, #0d1531 60%, #21355b 100%)", // 星夜深邃
+            8: "linear-gradient(180deg, #01040d 0%, #0d193d 70%, #1d3363 100%)", // 誓言教堂
+            9: "linear-gradient(180deg, #000105 0%, #050a1b 70%, #0d152c 100%)", // 求婚纯粹静谧
+            10: "linear-gradient(180deg, #f5dfbe 0%, #fbc2a6 40%, #c4965c 100%)", // 破晓暖金朝阳
+            11: "linear-gradient(180deg, #f2d2a4 0%, #e2ab70 50%, #996e38 100%)", // 终成眷属香槟金
+            12: "linear-gradient(180deg, #060919 0%, #121b3a 60%, #241c38 100%)"  // 庆典星夜
+        };
+
+        // 适配视窗大小
+        function adjustCanvasSize() {
+            mainCanvas.width = window.innerWidth;
+            mainCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', adjustCanvasSize);
+        adjustCanvasSize();
+
+        // 完美解决自动播放机制 (音频解锁)
+        function unlockAudio() {
+            if (audio.paused) {
+                audio.play().then(() => {
+                    musicBtn.classList.add('playing');
+                }).catch(() => {
+                    // 如果被强力阻止，保留界面静音样式，等待用户交互解锁
+                });
+            }
+        }
+
+        // 双击或点击画面任何位置都可以解除浏览器对媒体的锁定
+        document.addEventListener('pointerdown', unlockAudio, { once: false });
+
+        // 生成导航卡槽
+        for(let i = 1; i <= totalScenes; i++) {
+            const frame = document.createElement('div');
+            frame.className = 'film-frame' + (i === 1 ? ' active' : '');
+            frame.addEventListener('click', () => {
+                if(!isSweeping) changeScene(i - 1);
+            });
+            filmNav.appendChild(frame);
+        }
+
+        // 粒子模型
+        class CinematicParticle {
+            constructor(style, customX, customY, vx, vy) {
+                this.style = style || 'glow'; // 'glow', 'petal', 'gold_dust', 'champagne_bubble'
+                this.x = customX || Math.random() * mainCanvas.width;
+                this.y = customY || mainCanvas.height + 20;
+                this.size = Math.random() * 6 + 2;
+                this.vx = vx || Math.random() * 0.8 - 0.4;
+                this.vy = vy || -(Math.random() * 1.5 + 0.4);
+                this.alpha = 1;
+                this.life = 1.0;
+                this.decay = Math.random() * 0.005 + 0.003;
+                this.angle = Math.random() * Math.PI * 2;
+                this.spin = Math.random() * 0.02 - 0.01;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.angle += this.spin;
+
+                // 物理微调：给气泡和花瓣加入风力飘动
+                if (this.style === 'petal') {
+                    this.vx += Math.sin(this.y * 0.005) * 0.03;
+                } else if (this.style === 'champagne_bubble') {
+                    this.vx += Math.cos(this.y * 0.01) * 0.08;
+                    this.size *= 0.998; // 气泡逐渐变小
+                }
+
+                this.life -= this.decay;
+                this.alpha = Math.max(0, this.life);
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                ctx.globalAlpha = this.alpha;
+
+                if (this.style === 'petal') {
+                    // 飞舞的淡粉色樱花瓣
+                    ctx.fillStyle = 'rgba(255, 200, 210, 0.7)';
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.quadraticCurveTo(-this.size, -this.size, 0, -this.size * 2);
+                    ctx.quadraticCurveTo(this.size, -this.size, 0, 0);
+                    ctx.fill();
+                } else if (this.style === 'gold_dust') {
+                    // 璀璨香槟金屑
+                    ctx.fillStyle = 'rgba(245, 228, 188, 0.95)';
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = 'var(--primary-gold)';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (this.style === 'champagne_bubble') {
+                    // 狂欢晚宴香槟气泡
+                    ctx.strokeStyle = 'rgba(226, 192, 141, 0.6)';
+                    ctx.fillStyle = 'rgba(245, 228, 188, 0.15)';
+                    ctx.shadowBlur = 4;
+                    ctx.shadowColor = 'rgba(226, 192, 141, 0.2)';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                } else {
+                    // 默认星河微光
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size * 0.6, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+        }
+
+        // 高动态光晕涟漪
+        class RippleWave {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.radius = 0;
+                this.maxRadius = Math.max(mainCanvas.width, mainCanvas.height) * 0.4;
+                this.alpha = 1;
+                this.width = 3;
+            }
+
+            update() {
+                this.radius += (this.maxRadius - this.radius) * 0.05;
+                this.alpha = 1 - (this.radius / this.maxRadius);
+                this.width = 3 * (1 - (this.radius / this.maxRadius));
+            }
+
+            draw() {
+                ctx.save();
+                ctx.strokeStyle = `rgba(226, 192, 141, ${this.alpha * 0.6})`;
+                ctx.lineWidth = this.width;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = 'var(--primary-gold)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        // 动画生成器
+        function tick() {
+            ctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+
+            // 根据场景动态释放定制粒子
+            if (particles.length < 150) {
+                // 1. 在相遇、异地阶段释放微光星点
+                if (activeIndex >= 0 && activeIndex <= 3) {
+                    if (Math.random() < 0.08) particles.push(new CinematicParticle('glow'));
+                }
+                // 2. 在心动、恋爱阶段飘散樱花瓣
+                if (activeIndex === 1 || activeIndex === 4) {
+                    if (Math.random() < 0.06) particles.push(new CinematicParticle('petal'));
+                }
+                // 3. 在时光长河、求婚、誓言、黎明破晓释放璀璨香槟金粉
+                if (activeIndex === 5 || (activeIndex >= 7 && activeIndex <= 10)) {
+                    if (Math.random() < 0.18) particles.push(new CinematicParticle('gold_dust'));
+                }
+                // 4. 在最终狂欢婚宴祝酒释放香槟气泡
+                if (activeIndex === 11) {
+                    if (Math.random() < 0.25) {
+                        particles.push(new CinematicParticle('champagne_bubble', Math.random() * mainCanvas.width, mainCanvas.height + 20));
+                    }
+                }
+            }
+
+            // 更新与绘制粒子
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.update();
+                p.draw();
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+
+            // 更新与绘制高潮涟漪
+            for (let i = rippleWaves.length - 1; i >= 0; i--) {
+                const w = rippleWaves[i];
+                w.update();
+                w.draw();
+                if (w.radius >= w.maxRadius - 5) rippleWaves.splice(i, 1);
+            }
+
+            requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+
+        // 电影转场核心控制逻辑
+        function changeScene(targetIndex) {
+            if (targetIndex < 0 || targetIndex >= totalScenes || targetIndex === activeIndex) return;
+
+            isSweeping = true;
+            const sweepCurtain = document.getElementById('tide-sweep-curtain');
+            sweepCurtain.classList.add('sweep');
+
+            // 在大潮汐横跨屏幕、遮罩最暗的一刹那更换场景内容与天空颜色
+            setTimeout(() => {
+                // 移除原场景激活状态
+                document.querySelector(`.scene-container[data-scene="${activeIndex + 1}"]`).classList.remove('active');
+                
+                // 激活新场景
+                activeIndex = targetIndex;
+                document.querySelector(`.scene-container[data-scene="${activeIndex + 1}"]`).classList.add('active');
+
+                // 渲染匹配的独立天空色谱
+                skyBg.style.background = sceneAtmospheres[activeIndex + 1];
+
+                // 调整右侧胶片卡槽高亮
+                const frames = document.querySelectorAll('.film-frame');
+                frames.forEach((f, idx) => {
+                    if (idx === activeIndex) f.classList.add('active');
+                    else f.classList.remove('active');
+                });
+
+                // 处理第十幕（他说愿意）的破晓瞬时亮起状态
+                const yesCard = document.getElementById('scene-she-says-yes');
+                if (activeIndex === 9) {
+                    // 全屏纯白一瞬，随后转为香槟晨曦
+                    document.body.style.backgroundColor = '#fff';
+                    setTimeout(() => {
+                        document.body.style.backgroundColor = '#030509';
+                    }, 500);
+                }
+
+                // 滑动提示器的状态处理
+                if (activeIndex === totalScenes - 1) {
+                    scroller.classList.remove('visible');
+                } else {
+                    scroller.classList.add('visible');
+                    if (activeIndex >= 8) {
+                        scroller.querySelector('.scroller-text').innerText = "继续见证幸福";
+                    } else {
+                        scroller.querySelector('.scroller-text').innerText = "滑动步入下一幕";
+                    }
+                }
+            }, 700);
+
+            // 清理动画类名
+            setTimeout(() => {
+                sweepCurtain.classList.remove('sweep');
+                isSweeping = false;
+            }, 1400);
+        }
+
+        // 邀请函开启交互
+        document.getElementById('btn-portal-enter').addEventListener('click', () => {
+            // 解锁音频
+            unlockAudio();
+            
+            // 隐藏大门
+            portal.classList.add('dismissed');
+
+            setTimeout(() => {
+                // 初始化加载第一幕
+                document.querySelector('.scene-container[data-scene="1"]').classList.add('active');
+                filmNav.classList.add('visible');
+                scroller.classList.add('visible');
+                portal.style.display = 'none';
+            }, 1200);
+        });
+
+        // 音乐控制器自主控制
+        musicBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // 阻止向下传递触发全屏涟漪
+            if (audio.paused) {
+                audio.play();
+                musicBtn.classList.add('playing');
+            } else {
+                audio.pause();
+                musicBtn.classList.remove('playing');
+            }
+        });
+
+        // 交互逻辑：滚轮 / 手势滑动
+        let touchStartY = 0;
+        window.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+            unlockAudio();
+        }, { passive: true });
+
+        window.addEventListener('touchend', (e) => {
+            if (isSweeping) return;
+            const touchEndY = e.changedTouches[0].clientY;
+            const deltaY = touchStartY - touchEndY;
+
+            if (Math.abs(deltaY) > 50) {
+                if (deltaY > 0 && activeIndex < totalScenes - 1) {
+                    changeScene(activeIndex + 1);
+                } else if (deltaY < 0 && activeIndex > 0) {
+                    changeScene(activeIndex - 1);
+                }
+            }
+        }, { passive: true });
+
+        window.addEventListener('wheel', (e) => {
+            if (isSweeping) return;
+            unlockAudio();
+
+            if (Math.abs(e.deltaY) > 15) {
+                if (e.deltaY > 0 && activeIndex < totalScenes - 1) {
+                    changeScene(activeIndex + 1);
+                } else if (e.deltaY < 0 && activeIndex > 0) {
+                    changeScene(activeIndex - 1);
+                }
+            }
+        }, { passive: true });
+
+        // 键盘事件支持
+        window.addEventListener('keydown', (e) => {
+            if (isSweeping) return;
+            unlockAudio();
+
+            if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+                if (activeIndex < totalScenes - 1) changeScene(activeIndex + 1);
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                if (activeIndex > 0) changeScene(activeIndex - 1);
+            }
+        });
+
+        // 极致高潮互动事件绑定
+        window.addEventListener('pointerdown', (e) => {
+            // 排除音乐控制器的点击
+            if (e.target.closest('#music-btn') || e.target.closest('#btn-portal-enter')) return;
+
+            // 1. 第九幕【求婚时刻】点击荡开震撼粒子金环，并延迟进阶到第十幕
+            if (activeIndex === 8) {
+                rippleWaves.push(new RippleWave(e.clientX, e.clientY));
+
+                // 喷射璀璨星光
+                for (let i = 0; i < 25; i++) {
+                    const speed = Math.random() * 4 + 2;
+                    const angle = Math.random() * Math.PI * 2;
+                    particles.push(new CinematicParticle(
+                        'gold_dust',
+                        e.clientX,
+                        e.clientY,
+                        Math.cos(angle) * speed,
+                        Math.sin(angle) * speed
+                    ));
+                }
+
+                // 2秒后自动滑向第十幕，见证誓言
+                setTimeout(() => {
+                    changeScene(9);
+                }, 1800);
+            }
+
+            // 2. 第十二幕【婚宴晚会】点击喷发香槟泡沫与璀璨小金屑
+            if (activeIndex === 11) {
+                for (let i = 0; i < 10; i++) {
+                    const pX = e.clientX + (Math.random() * 30 - 15);
+                    const pY = e.clientY + (Math.random() * 30 - 15);
+                    particles.push(new CinematicParticle('champagne_bubble', pX, pY, Math.random() * 2 - 1, -(Math.random() * 3 + 1)));
+                }
+                for (let i = 0; i < 15; i++) {
+                    const speed = Math.random() * 3 + 1;
+                    const angle = Math.random() * Math.PI * 2;
+                    particles.push(new CinematicParticle('gold_dust', e.clientX, e.clientY, Math.cos(angle) * speed, Math.sin(angle) * speed));
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
+
+```
